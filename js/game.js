@@ -13,7 +13,8 @@ let backgroundSecond;
 function preload() {
   this.load.image("sky", "assets/backgrounds/blue.png");
   this.load.image("player", "assets/characters/player.png");
-  this.load.image("enemy", "assets/characters/alien1.png");
+  this.load.image("enemy1", "assets/characters/alien1.png");
+  this.load.image("enemy2", "assets/characters/alien2.png");
 }
 
 /**
@@ -23,7 +24,7 @@ function create() {
   // scene background
   background = this.add.image(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, "sky");
   backgroundSecond = this.add.image(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, "sky");
-  backgroundSecond.setY(backgroundSecond.y - background.height);
+  backgroundSecond.setY(background.y - backgroundSecond.height);
 
   // playet setup
   player = this.add.image(SCREEN_WIDTH / 2, SCREEN_HEIGHT, "player");
@@ -32,7 +33,7 @@ function create() {
   player.setScale(PLAYER_SCALE);
 
   // enemy setup
-  enemy = this.add.image(SCREEN_WIDTH / 2, SCREEN_HEIGHT, "enemy");
+  enemy = this.add.image(SCREEN_WIDTH / 2, SCREEN_HEIGHT, "enemy1");
   enemy.setX((SCREEN_WIDTH - enemy.width * ENEMY_SCALE) / 2);
   enemy.setY((enemy.height * ENEMY_SCALE) / 2);
   enemy.setScale(ENEMY_SCALE);
@@ -45,15 +46,23 @@ function create() {
  * Updates each game object of the scene.
  */
 function update() {
-  if (cursors.left.isDown) {
-    console.log("left");
+  if (cursors.left.isDown && player.x > player.width / 2 * PLAYER_SCALE) {
+    player.setX(player.x - PLAYER_VELOCITY);
+  } else if (cursors.right.isDown && player.x < SCREEN_WIDTH - player.width / 2 * PLAYER_SCALE) {
+    player.setX(player.x + PLAYER_VELOCITY);
   }
 
-  backgroundSecond.setY(backgroundSecond.y + 1);
+  if (cursors.up.isDown && player.y > player.height / 2 * PLAYER_SCALE) {
+    player.setY(player.y - PLAYER_VELOCITY);
+  } else if (cursors.down.isDown && player.y < SCREEN_HEIGHT - player.height / 2 * PLAYER_SCALE) {
+    player.setY(player.y + PLAYER_VELOCITY);
+  }
+
+  backgroundSecond.setY(backgroundSecond.y + 1);  
   background.setY(background.y + 1);
 
-  if (background.y > (SCREEN_HEIGHT / 2)) {
-    background.setY(background.y - SCREEN_HEIGHT / 2);
+  if (background.y >= (SCREEN_HEIGHT / 2 + background.height)) {
+    background.setY(backgroundSecond.y - background.height);
 
     const backgroundCopy = background;
     background = backgroundSecond;
