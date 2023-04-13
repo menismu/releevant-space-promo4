@@ -46,6 +46,7 @@ function create() {
  * Updates each game object of the scene.
  */
 function update() {
+  // mover player con cursores
   if (cursors.left.isDown && player.x > player.width / 2 * PLAYER_SCALE) {
     player.setX(player.x - PLAYER_VELOCITY);
   } else if (cursors.right.isDown && player.x < SCREEN_WIDTH - player.width / 2 * PLAYER_SCALE) {
@@ -58,6 +59,11 @@ function update() {
     player.setY(player.y + PLAYER_VELOCITY);
   }
 
+  // mover enemigo
+  enemy.setY(enemy.y + ENEMY_VELOCITY);
+  enemy.setX(enemy.x + (player.x >= enemy.x ? 1 : -1) * ENEMY_VELOCITY);
+
+  // mover fondo
   backgroundSecond.setY(backgroundSecond.y + 1);  
   background.setY(background.y + 1);
 
