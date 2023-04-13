@@ -63,6 +63,15 @@ function update() {
   enemy.setY(enemy.y + ENEMY_VELOCITY);
   enemy.setX(enemy.x + (player.x >= enemy.x ? 1 : -1) * ENEMY_VELOCITY);
 
+  if (enemy.y > SCREEN_HEIGHT + enemy.height / 2 * ENEMY_SCALE) {
+    enemy.destroy();
+
+    enemy = this.add.image(SCREEN_WIDTH / 2, SCREEN_HEIGHT, "enemy1");
+    enemy.setX((SCREEN_WIDTH - enemy.width * ENEMY_SCALE) / 2);
+    enemy.setY((enemy.height * ENEMY_SCALE) / 2 - enemy.height / 2);
+    enemy.setScale(ENEMY_SCALE);
+  }
+
   // mover fondo
   backgroundSecond.setY(backgroundSecond.y + 1);  
   background.setY(background.y + 1);
