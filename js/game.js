@@ -6,6 +6,9 @@ let enemy;
 let cursors;
 let background;
 let backgroundSecond;
+let spaceBar;
+let bullets = [];
+let elapsedFrames = 0;
 
 /**
  * It prelaods all the assets required in the game.
@@ -40,12 +43,16 @@ function create() {
 
   //cursors map into game engine
   cursors = this.input.keyboard.createCursorKeys();
+
+  spaceBar = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
 }
 
 /**
  * Updates each game object of the scene.
  */
 function update() {
+  elapsedFrames++;
+
   // mover player con cursores
   if (cursors.left.isDown && player.x > player.width / 2 * PLAYER_SCALE) {
     player.setX(player.x - PLAYER_VELOCITY);
@@ -57,6 +64,17 @@ function update() {
     player.setY(player.y - PLAYER_VELOCITY);
   } else if (cursors.down.isDown && player.y < SCREEN_HEIGHT - player.height / 2 * PLAYER_SCALE) {
     player.setY(player.y + PLAYER_VELOCITY);
+  }
+
+  if (spaceBar.isDown && elapsedFrames > 20) {
+    bullets.push(this.add.ellipse(player.x, player.y - player.height / 2 * PLAYER_SCALE, 5, 10, 0xf5400a));
+    
+    elapsedFrames = 0;
+  }
+
+  // mover balas
+  for (const bullet of bullets) {
+    bullet.setY(bullet.y - BULLET_VELOCITY);
   }
 
   // mover enemigo
