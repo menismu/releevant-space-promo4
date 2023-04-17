@@ -9,6 +9,7 @@ let backgroundSecond;
 let spaceBar;
 let bullets = [];
 let elapsedFrames = 0;
+let explosion;
 
 /**
  * It prelaods all the assets required in the game.
@@ -18,6 +19,7 @@ function preload() {
   this.load.image("player", "assets/characters/player.png");
   this.load.image("enemy1", "assets/characters/alien1.png");
   this.load.image("enemy2", "assets/characters/alien2.png");
+  this.load.image("red", "assets/particles/red.png");
 }
 
 /**
@@ -45,6 +47,16 @@ function create() {
   cursors = this.input.keyboard.createCursorKeys();
 
   spaceBar = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+
+  explosion = this.add.particles("red").createEmitter({
+    scale: { min: 0.5, max: 0 },
+    speed: { min: -100, max: 100 },
+    quantity: 10,
+    frequency: 0.1,
+    lifespan: 200,
+    gravityY: 0,
+    on: false
+  });
 }
 
 /**
@@ -82,6 +94,9 @@ function update() {
         && (bullet.y + bullet.height / 2) < (enemy.y + enemy.height / 2 * ENEMY_SCALE)) {
       bullet.destroy();
       enemy.destroy();
+
+      explosion.setPosition(enemy.x, enemy.y);
+      explosion.explode();
 
       bullets.splice(bullets.indexOf(bullet), 1);
 
