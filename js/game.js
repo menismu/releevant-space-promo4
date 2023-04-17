@@ -75,6 +75,21 @@ function update() {
   // mover balas
   for (const bullet of bullets) {
     bullet.setY(bullet.y - BULLET_VELOCITY);
+
+    if ((bullet.x - bullet.width / 2) > (enemy.x - enemy.width / 2 * ENEMY_SCALE) 
+        && (bullet.x + bullet.width / 2) < (enemy.x + enemy.width / 2 * ENEMY_SCALE)
+        && (bullet.y - bullet.height / 2) > (enemy.y - enemy.height / 2 * ENEMY_SCALE)
+        && (bullet.y + bullet.height / 2) < (enemy.y + enemy.height / 2 * ENEMY_SCALE)) {
+      bullet.destroy();
+      enemy.destroy();
+
+      bullets.splice(bullets.indexOf(bullet), 1);
+
+      enemy = this.add.image(SCREEN_WIDTH / 2, SCREEN_HEIGHT, "enemy1");
+      enemy.setX((SCREEN_WIDTH - enemy.width * ENEMY_SCALE) / 2);
+      enemy.setY((enemy.height * ENEMY_SCALE) / 2);
+      enemy.setScale(ENEMY_SCALE);
+    }
   }
 
   // mover enemigo
