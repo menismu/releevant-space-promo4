@@ -65,7 +65,16 @@ function create() {
 function update() {
   elapsedFrames++;
 
-  // mover player con cursores
+  moverPlayer(this);
+  moverBalas(this);
+  moverEnemigos(this);
+  moverFondo();
+}
+
+/**
+ * Mover player con cursores 
+ */
+function moverPlayer(engine) {
   if (cursors.left.isDown && player.x > player.width / 2 * PLAYER_SCALE) {
     player.setX(player.x - PLAYER_VELOCITY);
   } else if (cursors.right.isDown && player.x < SCREEN_WIDTH - player.width / 2 * PLAYER_SCALE) {
@@ -79,12 +88,16 @@ function update() {
   }
 
   if (spaceBar.isDown && elapsedFrames > 20) {
-    bullets.push(this.add.ellipse(player.x, player.y - player.height / 2 * PLAYER_SCALE, 5, 10, 0xf5400a));
+    bullets.push(engine.add.ellipse(player.x, player.y - player.height / 2 * PLAYER_SCALE, 5, 10, 0xf5400a));
     
     elapsedFrames = 0;
   }
+}
 
-  // mover balas
+/**
+ * Mover balas. 
+ */
+function moverBalas(engine) {
   for (const bullet of bullets) {
     bullet.setY(bullet.y - BULLET_VELOCITY);
 
@@ -100,27 +113,39 @@ function update() {
 
       bullets.splice(bullets.indexOf(bullet), 1);
 
-      enemy = this.add.image(SCREEN_WIDTH / 2, SCREEN_HEIGHT, "enemy1");
-      enemy.setX((SCREEN_WIDTH - enemy.width * ENEMY_SCALE) / 2);
-      enemy.setY((enemy.height * ENEMY_SCALE) / 2);
-      enemy.setScale(ENEMY_SCALE);
+      regenerarEnemigos(engine);
     }
   }
+}
 
-  // mover enemigo
+/**
+ * Regenerar enemigos. 
+ */
+function regenerarEnemigos(engine) {
+  enemy = engine.add.image(SCREEN_WIDTH / 2, SCREEN_HEIGHT, "enemy1");
+  enemy.setX((SCREEN_WIDTH - enemy.width * ENEMY_SCALE) / 2);
+  enemy.setY((enemy.height * ENEMY_SCALE) / 2 - enemy.height / 2);
+  enemy.setScale(ENEMY_SCALE);
+}
+
+/**
+ * Mover enemigos. 
+ */
+function moverEnemigos(engine) {
   enemy.setY(enemy.y + ENEMY_VELOCITY);
   enemy.setX(enemy.x + (player.x >= enemy.x ? 1 : -1) * ENEMY_VELOCITY);
 
   if (enemy.y > SCREEN_HEIGHT + enemy.height / 2 * ENEMY_SCALE) {
     enemy.destroy();
 
-    enemy = this.add.image(SCREEN_WIDTH / 2, SCREEN_HEIGHT, "enemy1");
-    enemy.setX((SCREEN_WIDTH - enemy.width * ENEMY_SCALE) / 2);
-    enemy.setY((enemy.height * ENEMY_SCALE) / 2 - enemy.height / 2);
-    enemy.setScale(ENEMY_SCALE);
+    regenerarEnemigos(engine);
   }
+}
 
-  // mover fondo
+/**
+ * Mover fondo.
+ */
+function moverFondo() {
   backgroundSecond.setY(backgroundSecond.y + 1);  
   background.setY(background.y + 1);
 
