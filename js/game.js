@@ -2,7 +2,7 @@
  * Variables used during the game.
  */
 let player;
-let enemy;
+let enemy = [];
 let cursors;
 let background;
 let backgroundSecond;
@@ -38,10 +38,7 @@ function create() {
   player.setScale(PLAYER_SCALE);
 
   // enemy setup
-  enemy = this.add.image(SCREEN_WIDTH / 2, SCREEN_HEIGHT, "enemy1");
-  enemy.setX((SCREEN_WIDTH - enemy.width * ENEMY_SCALE) / 2);
-  enemy.setY((enemy.height * ENEMY_SCALE) / 2);
-  enemy.setScale(ENEMY_SCALE);
+  regenerarEnemigos(this);
 
   //cursors map into game engine
   cursors = this.input.keyboard.createCursorKeys();
@@ -101,20 +98,25 @@ function moverBalas(engine) {
   for (const bullet of bullets) {
     bullet.setY(bullet.y - BULLET_VELOCITY);
 
-    if ((bullet.x - bullet.width / 2) > (enemy.x - enemy.width / 2 * ENEMY_SCALE) 
-        && (bullet.x + bullet.width / 2) < (enemy.x + enemy.width / 2 * ENEMY_SCALE)
-        && (bullet.y - bullet.height / 2) > (enemy.y - enemy.height / 2 * ENEMY_SCALE)
-        && (bullet.y + bullet.height / 2) < (enemy.y + enemy.height / 2 * ENEMY_SCALE)) {
-      bullet.destroy();
-      enemy.destroy();
+    for (const e of enemy) {
+      if ((bullet.x - bullet.width / 2) > (e.x - e.width / 2 * ENEMY_SCALE) 
+          && (bullet.x + bullet.width / 2) < (e.x + e.width / 2 * ENEMY_SCALE)
+          && (bullet.y - bullet.height / 2) > (e.y - e.height / 2 * ENEMY_SCALE)
+          && (bullet.y + bullet.height / 2) < (e.y + e.height / 2 * ENEMY_SCALE)) {
+        bullet.destroy();
+        e.destroy();
 
-      explosion.setPosition(enemy.x, enemy.y);
-      explosion.explode();
+        explosion.setPosition(e.x, e.y);
+        explosion.explode();
 
-      bullets.splice(bullets.indexOf(bullet), 1);
-
-      regenerarEnemigos(engine);
+        bullets.splice(bullets.indexOf(bullet), 1);
+        enemy.splice(enemy.indexOf(e), 1);
+      }
     }
+  }
+
+  if (enemy.length == 0) {
+    regenerarEnemigos(engine);
   }
 }
 
@@ -122,23 +124,34 @@ function moverBalas(engine) {
  * Regenerar enemigos. 
  */
 function regenerarEnemigos(engine) {
-  enemy = engine.add.image(SCREEN_WIDTH / 2, SCREEN_HEIGHT, "enemy1");
-  enemy.setX((SCREEN_WIDTH - enemy.width * ENEMY_SCALE) / 2);
-  enemy.setY((enemy.height * ENEMY_SCALE) / 2 - enemy.height / 2);
-  enemy.setScale(ENEMY_SCALE);
+  const numEnemigos = [1, 3, 5];
+  const numPosicion = Math.floor(Math.random() * 3);
+
+  for (let i = -numEnemigos[numPosicion] / 2; i < numEnemigos[numPosicion] / 2; i++) {
+    const e = engine.add.image(SCREEN_WIDTH / 2, SCREEN_HEIGHT, "enemy1");
+    e.setX((SCREEN_WIDTH - e.width * ENEMY_SCALE) / 2 + i * 2 * e.width * ENEMY_SCALE);
+    e.setY((e.height * ENEMY_SCALE) / 2 - e.height / 2);
+    e.setScale(ENEMY_SCALE);
+
+    enemy.push(e);
+  }
 }
 
 /**
  * Mover enemigos. 
  */
 function moverEnemigos(engine) {
-  enemy.setY(enemy.y + ENEMY_VELOCITY);
-  enemy.setX(enemy.x + (player.x >= enemy.x ? 1 : -1) * ENEMY_VELOCITY);
+  if (enemy.length == 1) {
+    enemy[0].setX(enemy[0].x + (player.x >= enemy[0].x ? 1 : -1) * ENEMY_VELOCITY);
+  }
+  for (const e of enemy) {
+    e.setY(e.y + ENEMY_VELOCITY);
 
-  if (enemy.y > SCREEN_HEIGHT + enemy.height / 2 * ENEMY_SCALE) {
-    enemy.destroy();
+    if (e.y > SCREEN_HEIGHT + e.height / 2 * ENEMY_SCALE) {
+      e.destroy();
 
-    regenerarEnemigos(engine);
+      regenerarEnemigos(engine);
+    }
   }
 }
 
